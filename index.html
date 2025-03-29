@@ -3,79 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Géolocalisation sur le plan de l'hôpital</title>
+    <title>Plan de l'hôpital</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
 </head>
 <body>
-    <h1>Localisation sur le plan de l'hôpital</h1>
+    <h1>Localisation sur le plan et carte interactive</h1>
+
     <div id="map-container">
-        <!-- L'image du plan -->
         <img id="map" src="plan_hopital.jpg" alt="Plan de l'hôpital">
-        <!-- Marqueur de la position de l'utilisateur -->
-        <div id="user-location" class="user-location"></div>
+        <div id="user-location"></div>
     </div>
-    <!-- Nouveau bouton de localisation -->
-    <button id="location-btn">Se localiser</button>
 
+    <button id="location-btn">Démarrer la localisation</button>
+
+    <!-- Carte interactive Leaflet -->
+    <div id="leaflet-map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-        // script.js
 
-// Fonction pour obtenir la position de l'utilisateur
-function getLocation() {
+        let watchID = null;
+let map, userMarker;
+
+// Initialisation de la carte Leaflet
+function initLeafletMap() {
+    map = L.map('leaflet-map').setView([43.6278, 1.4600], 18);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    userMarker = L.marker([43.6278, 1.4600], {
+        icon: L.icon({
+            iconUrl: 'gps_icon.png',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        })
+    }).addTo(map);
+}
+
+// Fonction pour activer la localisation en temps réel
+function startTracking() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError, {
-            enableHighAccuracy: true, // Demander des résultats plus précis
-            timeout: 10000, // Temps d'attente maximum (en ms)
-            maximumAge: 0 // Ne pas utiliser une position mise en cache
+        watchID = navigator.geolocation.watchPosition(updatePosition, showError, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
         });
     } else {
-        alert("La géolocalisation n'est pas supportée par votre navigateur.");
+        alert("Votre navigateur ne supporte pas la géolocalisation.");
     }
 }
 
-// Fonction pour afficher la position de l'utilisateur sur le plan
-function showPosition(position) {
-    // Définir les bornes géographiques du plan de l'hôpital
-    let longitude_min = 1.460062;   // Longitude minimale (exemple)
-    let longitude_max = 1.460021;   // Longitude maximale (exemple)
-    let latitude_min = 43.627834;   // Latitude minimale (exemple)
-    let latitude_max = 43.627777;   // Latitude maximale (exemple)
+// Mise à jour de la position sur le plan et la carte
+function updatePosition(position) {
+    let longitude_min = 1.4598, longitude_max = 1.4602;
+    let latitude_min = 43.6280, latitude_max = 43.6277;
 
-    // Coordonnées GPS de l'utilisateur
     let longitude = position.coords.longitude;
     let latitude = position.coords.latitude;
 
-    // Calcul des pourcentages pour la longitude et la latitude
-    let longitude_percentage = (longitude - longitude_min) / (longitude_max - longitude_min) * 100;
-    let latitude_percentage = (latitude_max - latitude) / (latitude_max - latitude_min) * 100;
+    console.log("Position utilisateur:", longitude, latitude);
 
-    // Récupérer l'élément du marqueur de l'utilisateur
-    let userLocation = document.getElementById("user-location");
+    if (longitude >= longitude_min && longitude <= longitude_max && latitude <= latitude_min && latitude >= latitude_max) {
+        let longitude_percentage = ((longitude - longitude_min) / (longitude_max - longitude_min)) * 100;
+        let latitude_percentage = ((latitude_min - latitude) / (latitude_min - latitude_max)) * 100;
 
-    // Appliquer les pourcentages calculés pour positionner le marqueur
-    userLocation.style.left = longitude_percentage + "%";  // Position horizontale
-    userLocation.style.top = latitude_percentage + "%";    // Position verticale
-    userLocation.style.display = "block";  // Afficher le marqueur
-}
+        console.log("Position sur le plan: ", longitude_percentage + "% (X), ", latitude_percentage + "% (Y)");
 
-// Fonction pour gérer les erreurs de géolocalisation
-function showError(error) {
-    switch (error.code) {
-        case error.PERMISSION_DENIED:
-            alert("Vous devez autoriser la localisation pour utiliser cette fonctionnalité.");
-            break;
-        case error.POSITION_UNAVAILABLE:
-            alert("La localisation est indisponible.");
-            break;
-        case error.TIMEOUT:
-            alert("La demande de localisation a expiré.");
-            break;
-        default:
-            alert("Une erreur inconnue est survenue.");
+        let userLocation = document.getElementById("user-location");
+        userLocation.style.left = longitude_percentage + "%";
+        userLocation.style.top = latitude_percentage + "%";
+        userLocation.style.display = "block";
+
+        // Mise à jour du marqueur sur la carte Leaflet
+        userMarker.setLatLng([latitude, longitude]);
+        map.setView([latitude, longitude], 18);
+    } else {
+        alert("Vous êtes en dehors de la zone définie.");
     }
 }
 
+// Gestion des erreurs
+function showError(error) {
+    switch (error.code) {
+        case error.PERMISSION_DENIED:
+            alert("Autorisez la localisation pour voir votre position.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Localisation indisponible.");
+            break;
+        case error.TIMEOUT:
+            alert("La localisation a expiré.");
+            break;
+        default:
+            alert("Erreur inconnue.");
+    }
+}
+
+// Initialisation
+document.getElementById("location-btn").addEventListener("click", startTracking);
+window.onload = initLeafletMap;
 
     </script>
 </body>
 </html>
+
