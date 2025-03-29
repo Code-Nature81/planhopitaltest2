@@ -2,8 +2,11 @@
 #map-container {
     position: relative;
     width: 100vw;
-    height: 50vh;
+    height: 80vh;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Image du plan */
@@ -16,18 +19,12 @@
 /* Icône de géolocalisation */
 #user-location {
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     background: url('gps_icon.png') no-repeat center;
     background-size: cover;
     display: none;
     transform: translate(-50%, -50%);
-}
-
-/* Carte interactive Leaflet */
-#leaflet-map {
-    width: 100vw;
-    height: 50vh;
 }
 
 /* Style du bouton */
