@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plan de l'hôpital</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
 </head>
 <body>
-    <h1>Localisation sur le plan et carte interactive</h1>
+    <h1>Localisation sur le plan</h1>
 
     <div id="map-container">
         <img id="map" src="plan_hopital.jpg" alt="Plan de l'hôpital">
@@ -17,30 +16,8 @@
 
     <button id="location-btn">Démarrer la localisation</button>
 
-    <!-- Carte interactive Leaflet -->
-    <div id="leaflet-map"></div>
-
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-
         let watchID = null;
-let map, userMarker;
-
-// Initialisation de la carte Leaflet
-function initLeafletMap() {
-    map = L.map('leaflet-map').setView([43.6278, 1.4600], 18);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    userMarker = L.marker([43.6278, 1.4600], {
-        icon: L.icon({
-            iconUrl: 'gps_icon.png',
-            iconSize: [30, 30],
-            iconAnchor: [15, 15]
-        })
-    }).addTo(map);
-}
 
 // Fonction pour activer la localisation en temps réel
 function startTracking() {
@@ -55,7 +32,7 @@ function startTracking() {
     }
 }
 
-// Mise à jour de la position sur le plan et la carte
+// Mise à jour de la position sur le plan
 function updatePosition(position) {
     let longitude_min = 1.4598, longitude_max = 1.4602;
     let latitude_min = 43.6280, latitude_max = 43.6277;
@@ -75,10 +52,6 @@ function updatePosition(position) {
         userLocation.style.left = longitude_percentage + "%";
         userLocation.style.top = latitude_percentage + "%";
         userLocation.style.display = "block";
-
-        // Mise à jour du marqueur sur la carte Leaflet
-        userMarker.setLatLng([latitude, longitude]);
-        map.setView([latitude, longitude], 18);
     } else {
         alert("Vous êtes en dehors de la zone définie.");
     }
@@ -103,7 +76,6 @@ function showError(error) {
 
 // Initialisation
 document.getElementById("location-btn").addEventListener("click", startTracking);
-window.onload = initLeafletMap;
 
     </script>
 </body>
