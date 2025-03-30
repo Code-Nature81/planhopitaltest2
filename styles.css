@@ -1,49 +1,42 @@
-/* Conteneur de l'image */
-#map-container {
-    position: relative;
-    width: 100vw;
-    height: 80vh;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+body {
+    text-align: center;
+    font-family: Arial, sans-serif;
 }
 
-/* Image du plan */
-#map {
+#map-container {
+    position: relative;
+    width: 90vw; /* Ajuste à l'écran */
+    height: 80vh;
+    margin: 20px auto;
+    overflow: hidden;
+    border: 2px solid #ccc;
+}
+
+#map-image {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-/* Icône de géolocalisation */
 #user-location {
     position: absolute;
     width: 20px;
     height: 20px;
     background-color: rgba(0, 0, 255, 0.8); /* Bleu semi-transparent */
-    border-radius: 50%; /* Rend l'élément rond */
-    border: 3px solid white; /* Effet contour */
-    box-shadow: 0 0 10px rgba(0, 0, 255, 0.8); /* Halo bleu */
-    display: block;
-    transform: translate(-50%, -50%); /* Centre le point sur sa position exacte */
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 10px rgba(0, 0, 255, 0.8);
+    display: none;
+    transform: translate(-50%, -50%);
     transition: left 0.2s ease-out, top 0.2s ease-out;
 }
 
-
-/* Style du bouton */
 #location-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #007bff;
+    background-color: blue;
     color: white;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
-}
-#location-btn:hover {
-    background-color: #0056b3;
+    margin-top: 10px;
 }

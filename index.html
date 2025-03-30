@@ -7,90 +7,85 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1> plan22</h1>
-
     <div id="map-container">
-        <img id="map" src="plan_hopital.jpg" alt="Plan de l'hôpital">
-        <div id="user-location"></div>
+        <img src="plan_hopital.jpg" id="map-image" alt="Plan de l'hôpital">
+        <div id="user-location"></div> <!-- Point bleu de géolocalisation -->
     </div>
-
-    <button id="location-btn">Démarrer la localisation</button>
-
+    <button id="location-btn">Activer la localisation</button>
     <script>
+
         let watchID = null;
 
-        // Fonction pour activer la localisation en temps réel avec haute précision
-        function startTracking() {
-            if (navigator.geolocation) {
-                watchID = navigator.geolocation.watchPosition(updatePosition, showError, {
-                    enableHighAccuracy: true,  // Active le mode haute précision
-                    timeout: 10000,  // Temps max avant expiration (10s)
-                    maximumAge: 0    // Pas de cache, récupère toujours une nouvelle position
-                });
-            } else {
-                alert("Votre navigateur ne supporte pas la géolocalisation.");
-            }
-        }
-        
-        // Mise à jour de la position sur le plan
-        function updatePosition(position) {
-            let accuracy = position.coords.accuracy; // Précision en mètres
-            let longitude = position.coords.longitude;
-            let latitude = position.coords.latitude;
-        
-            console.log(`Position utilisateur: ${longitude}, ${latitude} (Précision: ${accuracy}m)`);
-        
-            // Vérifie si la précision est suffisante (exclut les erreurs GPS)
-            if (accuracy > 20) {  // Ignore les positions imprécises (> 20 mètres d'erreur)
-                console.warn("Position ignorée car trop imprécise.");
-                return;
-            }
-        
-            // Définition des bornes de l'hôpital
-            let longitude_min = 1.4598, longitude_max = 1.4602;
-            let latitude_min = 43.6280, latitude_max = 43.6277;
-        
-            console.log("Longitude min/max:", longitude_min, longitude_max);
-            console.log("Latitude min/max:", latitude_min, latitude_max);
-            console.log("Position détectée:", longitude, latitude);
-        
-            // Vérifie si l'utilisateur est bien dans la zone définie
-            if (longitude >= longitude_min && longitude <= longitude_max && latitude <= latitude_min && latitude >= latitude_max) {
-                let longitude_percentage = ((longitude - longitude_min) / (longitude_max - longitude_min)) * 100;
-                let latitude_percentage = ((latitude_min - latitude) / (latitude_min - latitude_max)) * 100;
-        
-                console.log(`Position en % sur le plan: X=${longitude_percentage}%, Y=${latitude_percentage}%`);
-        
-                let userLocation = document.getElementById("user-location");
-                userLocation.style.left = longitude_percentage + "%";
-                userLocation.style.top = latitude_percentage + "%";
-                userLocation.style.display = "block";
-            } else {
-                alert("Vous êtes en dehors de la zone définie.");
-                console.warn("Position en dehors de la zone !");
-            }
-        }
-        
-        // Gestion des erreurs GPS
-        function showError(error) {
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    alert("Autorisez la localisation pour voir votre position.");
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    alert("Localisation indisponible.");
-                    break;
-                case error.TIMEOUT:
-                    alert("La localisation a expiré.");
-                    break;
-                default:
-                    alert("Erreur inconnue.");
-            }
-        }
-        
-        // Démarrer le tracking quand on appuie sur le bouton
-        document.getElementById("location-btn").addEventListener("click", startTracking);
-        
+// Fonction pour démarrer le suivi de position
+function startTracking() {
+    if (navigator.geolocation) {
+        watchID = navigator.geolocation.watchPosition(updatePosition, showError, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        });
+    } else {
+        alert("Votre navigateur ne supporte pas la géolocalisation.");
+    }
+}
+
+// Met à jour la position sur le plan
+function updatePosition(position) {
+    let accuracy = position.coords.accuracy;
+    let longitude = position.coords.longitude;
+    let latitude = position.coords.latitude;
+
+    console.log(`Position utilisateur: ${longitude}, ${latitude} (Précision: ${accuracy}m)`);
+
+    // Si la précision est mauvaise, on ignore
+    if (accuracy > 20) {
+        console.warn("Position ignorée car trop imprécise.");
+        return;
+    }
+
+    // Définition des bornes GPS du plan
+    let longitude_min = 1.4598, longitude_max = 1.4602;
+    let latitude_min = 43.6280, latitude_max = 43.6277;
+
+    console.log("Longitude min/max:", longitude_min, longitude_max);
+    console.log("Latitude min/max:", latitude_min, latitude_max);
+
+    // Vérifier si l'utilisateur est dans la zone
+    if (longitude >= longitude_min && longitude <= longitude_max && latitude <= latitude_min && latitude >= latitude_max) {
+        let longitude_percentage = ((longitude - longitude_min) / (longitude_max - longitude_min)) * 100;
+        let latitude_percentage = ((latitude_min - latitude) / (latitude_min - latitude_max)) * 100;
+
+        console.log(`Position en % sur le plan: X=${longitude_percentage}%, Y=${latitude_percentage}%`);
+
+        let userLocation = document.getElementById("user-location");
+        userLocation.style.left = longitude_percentage + "%";
+        userLocation.style.top = latitude_percentage + "%";
+        userLocation.style.display = "block";
+    } else {
+        alert("Vous êtes en dehors de la zone définie.");
+        console.warn("Position hors de la zone !");
+    }
+}
+
+// Gère les erreurs GPS
+function showError(error) {
+    switch (error.code) {
+        case error.PERMISSION_DENIED:
+            alert("Autorisez la localisation pour voir votre position.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Localisation indisponible.");
+            break;
+        case error.TIMEOUT:
+            alert("La localisation a expiré.");
+            break;
+        default:
+            alert("Erreur inconnue.");
+    }
+}
+
+// Bouton pour activer la localisation
+document.getElementById("location-btn").addEventListener("click", startTracking);
 
     </script>
 </body>
