@@ -11,7 +11,7 @@
         <img src="plan_hopital.jpg" id="map-image" alt="Plan de l'hôpital">
         <div id="user-location"></div> <!-- Point bleu de géolocalisation -->
     </div>
-    <button id="location-btn">Activer la localisation</button>
+    <button id="location-btn">Activer la localisationn</button>
     <script>
 
         let watchID = null;
@@ -57,15 +57,13 @@ function updatePosition(position) {
 
         console.log(`Position en % sur le plan: X=${longitude_percentage}%, Y=${latitude_percentage}%`);
 
-        let userLocation = document.getElementById("user-location");
-        userLocation.style.left = longitude_percentage + "%";
-        userLocation.style.top = latitude_percentage + "%";
-        userLocation.style.display = "block";
-    } else {
-        alert("Vous êtes en dehors de la zone définie.");
-        console.warn("Position hors de la zone !");
-    }
-}
+      
+let userLocation = document.getElementById("user-location");
+userLocation.style.left = "50%";
+userLocation.style.top = "50%";
+userLocation.style.display = "block"; // Forcer l'affichage
+console.log("✅ Point affiché au centre !");
+    }}
 
 // Gère les erreurs GPS
 function showError(error) {
