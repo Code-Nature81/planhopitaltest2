@@ -19,13 +19,13 @@
     <script>
         let watchID = null;
 
-// Fonction pour activer la localisation en temps réel
+// Fonction pour activer la localisation en temps réel avec haute précision
 function startTracking() {
     if (navigator.geolocation) {
         watchID = navigator.geolocation.watchPosition(updatePosition, showError, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
+            enableHighAccuracy: true,  // Active le mode haute précision
+            timeout: 10000,  // Temps max avant expiration (10s)
+            maximumAge: 0    // Pas de cache, récupère toujours une nouvelle position
         });
     } else {
         alert("Votre navigateur ne supporte pas la géolocalisation.");
@@ -34,19 +34,27 @@ function startTracking() {
 
 // Mise à jour de la position sur le plan
 function updatePosition(position) {
-    let longitude_min = 1.4598, longitude_max = 1.4602;
-    let latitude_min = 43.6280, latitude_max = 43.6277;
-
+    let accuracy = position.coords.accuracy; // Précision en mètres
     let longitude = position.coords.longitude;
     let latitude = position.coords.latitude;
 
-    console.log("Position utilisateur:", longitude, latitude);
+    console.log(`Position utilisateur: ${longitude}, ${latitude} (Précision: ${accuracy}m)`);
+
+    // Vérifie si la précision est suffisante (exclut les erreurs GPS)
+    if (accuracy > 20) {  // Ignore les positions imprécises (> 20 mètres d'erreur)
+        console.warn("Position ignorée car trop imprécise.");
+        return;
+    }
+
+    // Définition des bornes de l'hôpital
+    let longitude_min = 1.4598, longitude_max = 1.4602;
+    let latitude_min = 43.6280, latitude_max = 43.6277;
 
     if (longitude >= longitude_min && longitude <= longitude_max && latitude <= latitude_min && latitude >= latitude_max) {
         let longitude_percentage = ((longitude - longitude_min) / (longitude_max - longitude_min)) * 100;
         let latitude_percentage = ((latitude_min - latitude) / (latitude_min - latitude_max)) * 100;
 
-        console.log("Position sur le plan: ", longitude_percentage + "% (X), ", latitude_percentage + "% (Y)");
+        console.log(`Position sur le plan: ${longitude_percentage}% (X), ${latitude_percentage}% (Y)`);
 
         let userLocation = document.getElementById("user-location");
         userLocation.style.left = longitude_percentage + "%";
@@ -57,7 +65,7 @@ function updatePosition(position) {
     }
 }
 
-// Gestion des erreurs
+// Gestion des erreurs GPS
 function showError(error) {
     switch (error.code) {
         case error.PERMISSION_DENIED:
@@ -74,10 +82,9 @@ function showError(error) {
     }
 }
 
-// Initialisation
+// Démarrer le tracking quand on appuie sur le bouton
 document.getElementById("location-btn").addEventListener("click", startTracking);
 
     </script>
 </body>
 </html>
-
