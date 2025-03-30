@@ -18,15 +18,12 @@
 
 /* Icône de géolocalisation */
 #user-location {
-    position: absolute;
+    background-color: red !important;
     width: 20px;
     height: 20px;
-    background-color: blue;
-    border-radius: 50%; /* Rend l'élément parfaitement rond */
-    border: 3px solid white; /* Effet de contour */
-    box-shadow: 0 0 10px rgba(0, 0, 255, 0.8); /* Lueur bleue */
-    display: none;
-    transform: translate(-50%, -50%); /* Centre l'élément */
+    position: absolute;
+    border-radius: 50%;
+    display: block !important;
 }
 
 
